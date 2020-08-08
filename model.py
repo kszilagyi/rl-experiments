@@ -43,18 +43,10 @@ class ValueModel(Model):
 
 
 
-class QModel(Model):
-    def __init__(self):
-        super(QModel, self).__init__()
-        self.d1 = Dense(10, activation='relu', name='128-layer')
-        self.d2 = Dense(10, activation='relu')
-        self.d3 = Dense(1)
-        print(len(self.d1.trainable_variables))
+def create_q_model():
+    d0 = Input(shape=(5,))
+    d1 = Dense(10, activation='relu', name='input')(d0)
+    d2 = Dense(10, activation='relu')(d1)
+    d3 = Dense(1)(d2)
+    return tf.keras.Model(outputs=d3, inputs=d0)
 
-    def call(self, x) -> tf.Tensor:
-        # x = self.input_layer(x)
-
-        x = self.d1(x)
-        x = self.d2(x)
-        x = self.d3(x)
-        return x
