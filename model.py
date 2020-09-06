@@ -45,8 +45,9 @@ class ValueModel(Model):
 
 def create_q_model():
     d0 = Input(shape=(5,))
-    d1 = Dense(10, activation='relu', name='input')(d0)
-    d2 = Dense(10, activation='relu')(d1)
-    d3 = Dense(1)(d2)
-    return tf.keras.Model(outputs=d3, inputs=d0)
+    d1 = Dense(64, activation='relu', name='input')(d0)
+    d2 = Dense(64, activation='relu')(d1)
+    d3 = Dense(64, activation='relu')(d2)
+    d5 = Dense(1)(d3)
+    return tf.keras.Model(outputs=d5, inputs=d0)
 
