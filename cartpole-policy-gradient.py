@@ -1,15 +1,12 @@
 import random
-import sys
 from time import sleep
 
 import gym
 import numpy as np
 import tensorflow as tf
-from tensorflow import metrics
-from tensorflow.python.keras.losses import CategoricalCrossentropy
 from tensorflow.python.ops.distributions.categorical import Categorical
 
-from model import PolicyModel, ValueModel
+from model import PolicyModel
 
 env = gym.make('CartPole-v0').env
 
@@ -24,20 +21,6 @@ PRINT_FREQ = 100
 EPISODE_LEN = 1000
 GAMMA = 0.95
 
-
-print(tf.nn.log_softmax(np.array([-10.0, 0.0,
-  0,
-                                  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                  0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])))
-print(np.exp(-800))
-print(np.log(tf.nn.softmax(np.array([-800.0, 0.0, 0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                              0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0,
-                                     0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0, 0.0])).numpy()))
-print(np.log(tf.nn.softmax(np.array([-800.0, -600])).numpy()))
-sys.exit(1)
 
 # @tf.function
 def forward(state, episode):
