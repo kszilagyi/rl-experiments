@@ -11,10 +11,13 @@ class Algo(ABC):
     def start_episode(self):
         pass
 
-    def action(self, observation):
+    def action(self, observation, t: int):
         pass
 
-    def step(self, observation, action, reward: float, new_observation, done: bool):
+    def step(self, observation, action, reward: float, new_observation, done: bool, t: int):
+        pass
+
+    def episode_end(self, t: int):
         pass
 
 
@@ -38,14 +41,15 @@ class Environment:
             algo.start_episode()
             episode_return = 0
             for t in range(self.episode_length):
-                action = algo.action(observation)
+                action = algo.action(observation, t)
                 new_observation, reward, done, info = env.step(action)
                 episode_return += reward
-                algo.step(observation, action, reward, new_observation, done)
+                algo.step(observation, action, reward, new_observation, done, t)
 
                 observation = new_observation
 
                 if done or t + 1 == self.episode_length:
+                    algo.episode_end(t)
                     break
             episode_returns.append(episode_return)
         env.close()
