@@ -1,5 +1,3 @@
-import random
-from time import sleep
 
 import gym
 import numpy as np
@@ -28,9 +26,7 @@ class PolicyGradient(Algo):
         self.rewards = [0.0] * episode_length
 
     @tf.function
-    def action(self, observation, t):
-        well_formed_obs = np.expand_dims(observation, axis=1).T
-
+    def _action(self, well_formed_obs, t):
         with tf.GradientTape() as tape:
             # training=True is only needed if there are layers with different
             # behavior during training versus inference (e.g. Dropout).
@@ -38,16 +34,22 @@ class PolicyGradient(Algo):
             action_probabilities = tf.math.maximum(action_probabilities, 1e-9)
             log_action_probabilities = tf.math.log(action_probabilities)
 
-            dist = Categorical(probs=[action_probabilities.numpy()])
-            sampled_action = dist.sample().numpy()[0, 0]
+            dist = Categorical(probs=action_probabilities)
+            sampled_action = dist.sample()
             if sampled_action == 0:
                 higher_prob = log_action_probabilities[0, 0]
             else:
                 higher_prob = log_action_probabilities[0, 1]
 
         gradients = tape.gradient(higher_prob, policy_model.trainable_variables)
+        return sampled_action, gradients
+
+
+    def action(self, observation, t):
+        well_formed_obs = np.expand_dims(observation, axis=1).T
+        sampled_actions, gradients = self._action(tf.constant(well_formed_obs), tf.constant(t))
         self.gradients[t] = gradients
-        return sampled_action
+        return sampled_actions.numpy()[0]
 
     def step(self, observation, action, reward: float, new_observation, done: bool, t: int):
         self.rewards[t] = reward
