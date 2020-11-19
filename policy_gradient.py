@@ -21,6 +21,9 @@ GAMMA = 0.95
 
 
 class PolicyGradient(Algo):
+    def start_episode(self):
+        pass
+
     def __init__(self, episode_length):
         self.gradients = [None] * episode_length
         self.rewards = [0.0] * episode_length
@@ -53,6 +56,7 @@ class PolicyGradient(Algo):
 
     def step(self, observation, action, reward: float, new_observation, done: bool, t: int):
         self.rewards[t] = reward
+        return 0
 
     def episode_end(self, t):
         cumulative_reward = 0
@@ -69,3 +73,4 @@ class PolicyGradient(Algo):
         for time in range(t, -1, -1):
             adjusted_gradients = [-g * (cumulative_rewards[time]) / t for g in self.gradients[time]]
             optimizer.apply_gradients(zip(adjusted_gradients, policy_model.trainable_variables))
+        return t
