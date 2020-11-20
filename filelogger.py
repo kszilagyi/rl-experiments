@@ -16,18 +16,19 @@ class FileLogger(LoggerBackend):
         self.columns = columns
 
     def log(self, data: Dict[str, Any]):
-        if self.f is not None:
-            dir_path = Path('./' + data[self.directory_key])
-            os.mkdir(dir_path)
-            path = (dir_path / data[self.file_key]).resolve()
+        if self.f is None:
+            dir_path = Path('./' + str(data[self.directory_key]))
+            dir_path.mkdir(exist_ok=True)
+            path = (dir_path / (str(data[self.file_key]) + '.csv')).resolve()
             if path.exists():
                 logger.warn(f'Path {path} already exists')
                 exit(1)
             self.f = open(path, 'w')
             self.f.write(','.join(self.columns) + '\n')
 
-        padded_columns = [data[c] if c in data else '' for c in self.columns]
+        padded_columns = [str(data[c]) if c in data else '' for c in self.columns]
         self.f.write(','.join(padded_columns) + '\n')
+        self.f.flush()
 
     def close(self):
         self.f.close()

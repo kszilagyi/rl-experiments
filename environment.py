@@ -42,9 +42,9 @@ class Logger:
         self.backends = backends
         self.columns = columns
 
-    def log(self, data: Dict, episode_num: int, sample_cnt: int, elapsed_time: float, training_steps: int):
+    def log(self, params: Dict, data: Dict, episode_num: int, sample_cnt: int, elapsed_time: float, training_steps: int):
         assert set(self.columns) == set(data.keys())
-        augmented_data = dict(data)
+        augmented_data = {**params, **data}
         augmented_data['episode_num'] = episode_num
         augmented_data['sample_cnt'] = sample_cnt
         augmented_data['elapsed_time'] = elapsed_time
@@ -75,6 +75,8 @@ class Environment:
         sample_cnt = 0
         start_time = time.time()
         training_steps = 0
+        params = {}
+        params['seed'] = seed
         try:
             for i_episode in range(self.num_episodes):
                 observation = env.reset()
@@ -92,7 +94,7 @@ class Environment:
                     if done or t + 1 == self.episode_length:
                         training_steps += algo.episode_end(t)
                         break
-                logger.log({'episode_return': episode_return}, episode_num=i_episode, sample_cnt=sample_cnt,
+                logger.log(params, {'episode_return': episode_return}, episode_num=i_episode, sample_cnt=sample_cnt,
                            elapsed_time=time.time() - start_time, training_steps=training_steps)
                 episode_returns.append(episode_return)
             return episode_returns
