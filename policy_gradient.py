@@ -73,4 +73,4 @@ class PolicyGradient(Algo):
         for time in range(t, -1, -1):
             adjusted_gradients = [-g * (cumulative_rewards[time]) / t for g in self.gradients[time]]
             optimizer.apply_gradients(zip(adjusted_gradients, policy_model.trainable_variables))
-        return t
+        return t + 1

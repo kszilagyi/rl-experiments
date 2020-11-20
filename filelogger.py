@@ -22,7 +22,7 @@ class FileLogger(LoggerBackend):
             path = (dir_path / (str(data[self.file_key]) + '.csv')).resolve()
             if path.exists():
                 logger.warn(f'Path {path} already exists')
-                exit(1)
+                raise FileExistsError(path)
             self.f = open(path, 'w')
             self.f.write(','.join(self.columns) + '\n')
 

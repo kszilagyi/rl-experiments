@@ -37,13 +37,14 @@ class LoggerBackend(ABC):
         pass
 
 
+MANDATORY_COLUMNS = ['episode_num', 'sample_cnt', 'elapsed_time', 'training_steps', 'seed']
+
+
 class Logger:
-    def __init__(self, columns: List[str], backends: List[LoggerBackend]):
+    def __init__(self, backends: List[LoggerBackend]):
         self.backends = backends
-        self.columns = columns
 
     def log(self, params: Dict, data: Dict, episode_num: int, sample_cnt: int, elapsed_time: float, training_steps: int):
-        assert set(self.columns) == set(data.keys())
         augmented_data = {**params, **data}
         augmented_data['episode_num'] = episode_num
         augmented_data['sample_cnt'] = sample_cnt
