@@ -8,7 +8,7 @@ if [[ $FILES ]]; then
   exit 1
 fi
 
-VERSION=git rev-parse --short=12 HEAD
+VERSION=$(git rev-parse --short=12 HEAD)
 if [[ $(docker image ls | grep $VERSION) ]]; then
   echo "WARNING!!!!"
   echo "Tag already exists!"
