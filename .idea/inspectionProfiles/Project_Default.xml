@@ -1,0 +1,11 @@
+<component name="InspectionProjectProfileManager">
+  <profile version="1.0">
+    <option name="myName" value="Project Default" />
+    <inspection_tool class="PyAbstractClassInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyComparisonWithNoneInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyNoneFunctionAssignmentInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyShadowingBuiltinsInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyShadowingNamesInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+    <inspection_tool class="PyUnusedLocalInspection" enabled="true" level="WARNING" enabled_by_default="true" />
+  </profile>
+</component>
