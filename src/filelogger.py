@@ -2,8 +2,8 @@ import os
 from pathlib import Path
 from typing import Dict, Any, List
 
-from environment import LoggerBackend
-from logg import logg
+from src.environment import LoggerBackend
+from src.logg import logg
 
 logger = logg(__name__)
 

@@ -6,7 +6,7 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.ops.distributions.categorical import Categorical
 
-from model import PolicyModel
+from src.model import PolicyModel
 
 env = gym.make('CartPole-v0').env
 

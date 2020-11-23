@@ -8,7 +8,7 @@ import gym
 import numpy as np
 import tensorflow as tf
 
-from model import create_q_model
+from src.model import create_q_model
 
 env = gym.make('CartPole-v0').env
 optimizer = tf.keras.optimizers.Adam(learning_rate=0.005)

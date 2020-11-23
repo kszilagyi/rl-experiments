@@ -1,9 +1,9 @@
 import gym
 
-from environment import Environment, Logger, MANDATORY_COLUMNS
-from filelogger import FileLogger
-from live_graph_logger import LiveGraphLogger
-from policy_gradient import PolicyGradient
+from src.environment import Environment, Logger, MANDATORY_COLUMNS
+from src.filelogger import FileLogger
+from src.live_graph_logger import LiveGraphLogger
+from src.policy_gradient import PolicyGradient
 
 
 def main():

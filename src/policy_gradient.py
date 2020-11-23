@@ -4,8 +4,8 @@ import numpy as np
 import tensorflow as tf
 from tensorflow.python.ops.distributions.categorical import Categorical
 
-from environment import Algo
-from model import PolicyModel
+from src.environment import Algo
+from src.model import PolicyModel
 
 env = gym.make('CartPole-v0').env
 
