@@ -18,7 +18,7 @@ fi
 
 TAG=us.gcr.io/rl-experiments-296208/rl-experiments:$VERSION
 echo "Building $TAG"
-docker build -t "$TAG"
+docker build -t "$TAG" .
 echo "Pushing"
 docker push $TAG
 echo "Pushed $TAG"
