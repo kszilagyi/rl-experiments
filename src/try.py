@@ -1,7 +1,9 @@
+import importlib
 import gym
 
 from src.environment import Environment, Logger, MANDATORY_COLUMNS
 from src.filelogger import FileLogger
+from src.jobspec import job_specs
 from src.live_graph_logger import LiveGraphLogger
 from src.policy_gradient import PolicyGradient
 

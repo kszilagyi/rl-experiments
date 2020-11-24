@@ -2,7 +2,7 @@ import random
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, final, List
+from typing import Any, Dict, List
 
 import numpy as np
 import tensorflow as tf

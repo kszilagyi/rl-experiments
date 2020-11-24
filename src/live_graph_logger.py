@@ -1,7 +1,7 @@
 from collections import deque
 from typing import Dict, Any
 
-from environment import LoggerBackend
+from src.environment import LoggerBackend
 import matplotlib.pyplot as plt
 
 
