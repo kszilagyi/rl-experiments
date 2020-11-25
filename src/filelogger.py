@@ -9,17 +9,15 @@ logger = logg(__name__)
 
 
 class FileLogger(LoggerBackend):
-    def __init__(self, directory_key, file_key, columns: List[str]):
-        self.directory_key = directory_key
-        self.file_key = file_key
+    def __init__(self, columns: List[str]):
         self.f = None
         self.columns = columns
 
     def log(self, data: Dict[str, Any]):
         if self.f is None:
-            dir_path = Path('./' + str(data[self.directory_key]))
+            dir_path = Path('./job_output')
             dir_path.mkdir(exist_ok=True)
-            path = (dir_path / (str(data[self.file_key]) + '.csv')).resolve()
+            path = (dir_path / 'results.csv').resolve()
             if path.exists():
                 logger.warn(f'Path {path} already exists')
                 raise FileExistsError(path)

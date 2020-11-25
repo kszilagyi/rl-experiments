@@ -1,4 +1,3 @@
-import argparse
 import importlib
 import json
 import traceback
@@ -22,8 +21,8 @@ def run(params: Dict, extra_logging_backends: List[LoggerBackend]):
         algo = algo_creator(episode_length=episode_length)
         env = Environment(num_episodes=params['num_episodes'], episode_length=episode_length,
                           env_creator=lambda: gym.make(params['environment']), algo=algo)
-        env.train(params['seed'], Logger([FileLogger('seed', 'seed', MANDATORY_COLUMNS + ['episode_return'])]
-                                         + extra_logging_backends))
+        env.train(params['seed'], Logger([FileLogger(list(params.keys()) + MANDATORY_COLUMNS + ['episode_return'])]
+                                         + extra_logging_backends, params))
     except BaseException as e:
         logger.error(traceback.format_exc())
         raise e
