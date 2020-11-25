@@ -1,5 +1,12 @@
+static = {
+    'algo_path': 'src.policy_gradient',
+    'algo_name': 'PolicyGradient',
+    'episode_length': 200,
+    'environment': 'CartPole-v1',
+    'num_episodes': 1000
+}
 
-from src.jobspec import JobSpec
-from src.policy_gradient import PolicyGradient
-
-job_spec = JobSpec(PolicyGradient, 200, 'CartPole-v1', num_episodes=1000)
+grid = {
+    'seed': list(range(2)),
+    'size': ['small', 'large']
+}
