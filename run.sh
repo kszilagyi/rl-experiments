@@ -13,16 +13,15 @@ fi
 VERSION=$(git rev-parse --short=12 HEAD)
 if [[ $(docker image ls | grep $VERSION) ]]; then
   echo "WARNING!!!!"
-  echo "Tag already exists!"
+  echo "Tag already exists! SKipping building!!!"
   echo "WARNING!!!!"
-  exit 1
+else
+  TAG=us.gcr.io/rl-experiments-296208/rl-experiments:$VERSION
+  echo "Building $TAG"
+  docker build -t "$TAG" .
+  echo "Pushing"
+  docker push $TAG
+  echo "Pushed $TAG"
 fi
-
-TAG=us.gcr.io/rl-experiments-296208/rl-experiments:$VERSION
-echo "Building $TAG"
-docker build -t "$TAG" .
-echo "Pushing"
-docker push $TAG
-echo "Pushed $TAG"
 
 python -m src.submit_jobs --job_spec_path $JOB_SPEC_PATH --docker_image $TAG
