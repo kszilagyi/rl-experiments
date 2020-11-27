@@ -1,9 +1,11 @@
 import importlib
 import json
+import os
 import traceback
 from typing import Dict, List
 
 import gym
+from google.cloud import storage
 
 from src.environment import Environment, Logger, MANDATORY_COLUMNS, Algo, LoggerBackend
 from src.filelogger import FileLogger
@@ -28,8 +30,13 @@ def run(params: Dict, extra_logging_backends: List[LoggerBackend]):
         raise e
 
 def main():
-    with open('params.json') as f:
-        params = json.load(f)
+    storage_client = storage.Client()
+    bucket = storage_client.get_bucket('rl-experiments')
+    batch_name = os.environ['BATCH_NAME']
+    job_id = os.environ['JOB_ID']
+    blob = bucket.blob(batch_name + '/' + job_id + '/' + 'params.json')
+
+    params = json.loads(blob.download_as_text())
     run(params, [])
 
 

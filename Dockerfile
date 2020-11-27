@@ -4,4 +4,4 @@ RUN pip install -r requirements.txt
 ADD ./src /rl-experiments/src
 ADD ./jobs /rl-experiments/jobs
 WORKDIR rl-experiments
-CMD python -m src.run_online
+CMD python -m src.cloud_run

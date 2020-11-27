@@ -1,6 +1,8 @@
 #!/bin/bash
 set -euo pipefail
 
+JOB_SPEC_PATH=$1
+echo "JOB_SPEC_PATH=$JOB_SPEC_PATH"
 FILES=$(git status --porcelain)
 if [[ $FILES ]]; then
   echo "Uncommitted files"
@@ -23,3 +25,4 @@ echo "Pushing"
 docker push $TAG
 echo "Pushed $TAG"
 
+python src.submit_jobs --job_spec_path $JOB_SPEC_PATH --docker_image $TAG

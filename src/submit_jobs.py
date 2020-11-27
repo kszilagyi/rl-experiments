@@ -32,7 +32,7 @@ def main():
     storage_client = storage.Client()
     bucket = storage_client.get_bucket('rl-experiments')
     for job in jobs:
-        blob = bucket.blob(batch_name + '/' + job['id'] + '/' + 'config.json')
+        blob = bucket.blob(batch_name + '/' + job['id'] + '/' + 'params.json')
         blob.upload_from_string(json.dumps(job, indent=4))
 
 
