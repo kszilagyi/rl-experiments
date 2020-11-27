@@ -11,12 +11,13 @@ if [[ $FILES ]]; then
 fi
 
 VERSION=$(git rev-parse --short=12 HEAD)
+TAG=us.gcr.io/rl-experiments-296208/rl-experiments:$VERSION
+
 if [[ $(docker image ls | grep $VERSION) ]]; then
   echo "WARNING!!!!"
   echo "Tag already exists! SKipping building!!!"
   echo "WARNING!!!!"
 else
-  TAG=us.gcr.io/rl-experiments-296208/rl-experiments:$VERSION
   echo "Building $TAG"
   docker build -t "$TAG" .
   echo "Pushing"
