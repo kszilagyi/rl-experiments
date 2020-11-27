@@ -25,4 +25,4 @@ echo "Pushing"
 docker push $TAG
 echo "Pushed $TAG"
 
-python src.submit_jobs --job_spec_path $JOB_SPEC_PATH --docker_image $TAG
+python -m src.submit_jobs --job_spec_path $JOB_SPEC_PATH --docker_image $TAG
