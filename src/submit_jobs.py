@@ -10,8 +10,8 @@ import datetime
 
 def main():
     parser = argparse.ArgumentParser('Run online')
-    parser.add_argument('job_spec_path', type=str)
-    parser.add_argument('docker_image', type=str)
+    parser.add_argument('--job_spec_path', type=str)
+    parser.add_argument('--docker_image', type=str)
     args = parser.parse_args()
     job_spec_module: Any = importlib.import_module(args.job_spec_path)
     static_params= job_spec_module.static
