@@ -1,2 +1,5 @@
 .venv
 .idea/misc.xml
+job_output/
+__pycache__/
+logs.txt

@@ -3,4 +3,6 @@ target/
 .git/
 __pycache__
 .venv
+job_output/
+logs.txt
 
