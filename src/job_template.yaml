@@ -1,0 +1,17 @@
+apiVersion: batch/v1
+kind: Job
+metadata:
+  name: $NAME
+spec:
+  template:
+    spec:
+      containers:
+        - name: job-container
+          image: $IMAGE
+          env:
+            - name: BATCH_NAME
+              value: $BATCH_NAME
+            - name: JOB_ID
+              value: $JOB_ID
+      restartPolicy: Never
+  backoffLimit: 0

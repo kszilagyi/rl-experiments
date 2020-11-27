@@ -1,3 +1,5 @@
+name = 'test-job'
+
 static = {
     'algo_path': 'src.policy_gradient',
     'algo_name': 'PolicyGradient',
