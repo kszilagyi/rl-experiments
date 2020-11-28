@@ -31,6 +31,7 @@ def run(params: Dict, extra_logging_backends: List[LoggerBackend]):
 
 def main():
     storage_client = storage.Client(project='rl-experiments-296208')
+    print(storage_client.get_service_account_email())
     bucket = storage_client.get_bucket('rl-experiments')
     batch_name = os.environ['BATCH_NAME']
     job_id = os.environ['JOB_ID']
