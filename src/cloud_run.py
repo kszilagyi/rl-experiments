@@ -1,6 +1,7 @@
 import importlib
 import json
 import os
+import time
 import traceback
 from typing import Dict, List
 
@@ -46,6 +47,7 @@ def main():
         status = 'FAILURE'
         raise e
     finally:
+        time.sleep(100000)
         with open(OUTPUT_DIR / 'result.json', 'w') as f:
             json.dump({'status': status}, f)
         for name in os.listdir(OUTPUT_DIR):
