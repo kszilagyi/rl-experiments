@@ -30,7 +30,7 @@ def run(params: Dict, extra_logging_backends: List[LoggerBackend]):
         raise e
 
 def main():
-    storage_client = storage.Client()
+    storage_client = storage.Client(project='rl-experiments-296208')
     bucket = storage_client.get_bucket('rl-experiments')
     batch_name = os.environ['BATCH_NAME']
     job_id = os.environ['JOB_ID']
