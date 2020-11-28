@@ -3,7 +3,7 @@ kind: Job
 metadata:
   name: $NAME
   labels:
-    - batch: $BATCH_NAME
+    batch: $BATCH_NAME
 spec:
   template:
     spec:
