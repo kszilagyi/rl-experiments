@@ -44,9 +44,9 @@ def main():
     with open('src/job_template.yaml') as f:
         job_template = f.read()
     for job in jobs:
-        job_template = job_template.replace('$NAME', job['id']).replace('$IMAGE', args.docker_image)\
+        job_desc = job_template.replace('$NAME', job['id']).replace('$IMAGE', args.docker_image)\
             .replace('$JOB_ID', job['id']).replace('$BATCH_NAME', batch_name)
-        v1.create_namespaced_job('default', yaml.safe_load(job_template))
+        v1.create_namespaced_job('default', yaml.safe_load(job_desc))
 
 if __name__ == '__main__':
     main()
