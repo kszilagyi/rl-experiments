@@ -58,7 +58,7 @@ def main():
     logger.info('All jobs have been submitted')
     finished = 0
     while finished < len(jobs):
-        cluster_jobs = v1.list_namespaced_job('default', label_selector=f'batch: {batch_name}').items()
+        cluster_jobs = v1.list_namespaced_job('default', label_selector=f'batch={batch_name}').items()
         logger.info([j.status for j in cluster_jobs])
         time.sleep(1)
 
