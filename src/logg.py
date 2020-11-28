@@ -1,7 +1,11 @@
 import logging
+from pathlib import Path
 
 FORMAT = '%(asctime)-15s %(message)s'
-logging.basicConfig(format=FORMAT, filename='./logs.txt')
+OUTPUT_DIR = Path('./job_output').resolve()
+OUTPUT_DIR.mkdir(exist_ok=True)
+
+logging.basicConfig(format=FORMAT, filename=str(OUTPUT_DIR / 'logs.txt'))
 console = logging.StreamHandler()
 console.setLevel(logging.DEBUG)
 formatter = logging.Formatter(FORMAT)

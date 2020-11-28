@@ -9,7 +9,7 @@ from google.cloud import storage
 
 from src.environment import Environment, Logger, MANDATORY_COLUMNS, Algo, LoggerBackend
 from src.filelogger import FileLogger
-from src.logg import logg
+from src.logg import logg, OUTPUT_DIR
 
 logger = logg(__name__)
 
@@ -34,10 +34,25 @@ def main():
     bucket = storage_client.get_bucket('rl-experiments')
     batch_name = os.environ['BATCH_NAME']
     job_id = os.environ['JOB_ID']
-    blob = bucket.blob(batch_name + '/' + job_id + '/' + 'params.json')
+    cloud_root = batch_name + '/' + job_id + '/'
+    blob = bucket.blob(cloud_root + 'params.json')
 
     params = json.loads(blob.download_as_text())
-    run(params, [])
+    status = 'SUCCESS'
+    try:
+        run(params, [])
+    except BaseException as e:
+        status = 'FAILURE'
+        raise e
+    finally:
+        with open(OUTPUT_DIR / 'result.json', 'w') as f:
+            json.dump({'status': status}, f)
+        for name in os.listdir(OUTPUT_DIR):
+            full_path = OUTPUT_DIR / name
+            if full_path.is_file():
+                blob = bucket.blob(cloud_root + 'job_output/' + name)
+                blob.upload_from_filename(str(full_path))
+
 
 
 if __name__ == '__main__':

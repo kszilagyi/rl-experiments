@@ -1,9 +1,8 @@
-import os
-from pathlib import Path
+
 from typing import Dict, Any, List
 
 from src.environment import LoggerBackend
-from src.logg import logg
+from src.logg import logg, OUTPUT_DIR
 
 logger = logg(__name__)
 
@@ -15,9 +14,7 @@ class FileLogger(LoggerBackend):
 
     def log(self, data: Dict[str, Any]):
         if self.f is None:
-            dir_path = Path('./job_output')
-            dir_path.mkdir(exist_ok=True)
-            path = (dir_path / 'results.csv').resolve()
+            path = (OUTPUT_DIR / 'results.csv').resolve()
             if path.exists():
                 logger.warn(f'Path {path} already exists')
                 raise FileExistsError(path)
