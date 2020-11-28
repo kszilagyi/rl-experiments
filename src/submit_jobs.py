@@ -2,12 +2,17 @@ import argparse
 import importlib
 import itertools
 import json
+import time
 from typing import Dict, Any
 from uuid import uuid4
 from google.cloud import storage
 from kubernetes import client, config
 import datetime
 import yaml
+
+from src.logg import logg
+
+logger = logg(__name__)
 
 def main():
     parser = argparse.ArgumentParser('Run online')
@@ -43,10 +48,19 @@ def main():
     v1 = client.BatchV1Api()
     with open('src/job_template.yaml') as f:
         job_template = f.read()
-    for job in jobs:
+    for idx, job in enumerate(jobs):
         job_desc = job_template.replace('$NAME', job['id']).replace('$IMAGE', args.docker_image)\
             .replace('$JOB_ID', job['id']).replace('$BATCH_NAME', batch_name)
         v1.create_namespaced_job('default', yaml.safe_load(job_desc))
+        if (idx + 1) % 100 == 0:
+            logger.info(f'{idx + 1} jobs have been submitted')
+
+    logger.info('All jobs have been submitted')
+    finished = 0
+    while finished < len(jobs):
+        cluster_jobs = v1.list_namespaced_job('default', label_selector=f'batch: {batch_name}').items()
+        logger.info([j.status for j in cluster_jobs])
+        time.sleep(1)
 
 if __name__ == '__main__':
     main()
