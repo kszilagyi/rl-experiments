@@ -46,9 +46,7 @@ def main():
     for job in jobs:
         job_template = job_template.replace('$NAME', job['id']).replace('$IMAGE', args.docker_image)\
             .replace('$JOB_ID', job['id']).replace('$BATCH_NAME', batch_name)
-        ret = v1.create_namespaced_job('default', yaml.safe_load(job_template))
-        print(ret)
-
+        v1.create_namespaced_job('default', yaml.safe_load(job_template))
 
 if __name__ == '__main__':
     main()
