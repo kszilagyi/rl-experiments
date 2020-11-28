@@ -50,7 +50,9 @@ def main():
         for name in os.listdir(OUTPUT_DIR):
             full_path = OUTPUT_DIR / name
             if full_path.is_file():
+                print(cloud_root + 'job_output/' + name)
                 blob = bucket.blob(cloud_root + 'job_output/' + name)
+                print(str(full_path))
                 blob.upload_from_filename(str(full_path))
 
 
