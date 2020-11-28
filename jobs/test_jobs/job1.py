@@ -5,7 +5,7 @@ static = {
     'algo_name': 'PolicyGradient',
     'episode_length': 200,
     'environment': 'CartPole-v1',
-    'num_episodes': 1000
+    'num_episodes': 10
 }
 
 grid = {
