@@ -29,6 +29,7 @@ def run(params: Dict, extra_logging_backends: List[LoggerBackend]):
         logger.error(traceback.format_exc())
         raise e
 
+
 def main():
     storage_client = storage.Client(project='rl-experiments-296208')
     bucket = storage_client.bucket('rl-experiments')
