@@ -2,6 +2,7 @@ import importlib
 import json
 import os
 import traceback
+import random
 from typing import Dict, List
 
 import gym
@@ -15,6 +16,8 @@ logger = logg(__name__)
 
 
 def run(params: Dict, extra_logging_backends: List[LoggerBackend]):
+    if random.randint(0, 1) % 2 == 0:
+        exit(1)
     try:
         logger.error(f'Params: {params}')
         algo_creator = getattr(importlib.import_module(params['algo_path']), params['algo_name'])

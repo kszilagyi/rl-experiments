@@ -62,9 +62,9 @@ def main():
         # cluster_jobs = v1_batch.list_namespaced_job('default', label_selector=f'batch={batch_name}').items
         # jobs_ids = [j.name for j in cluster_jobs]
         cluster_pods = v1_core.list_namespaced_pod('default', label_selector=f'batch={batch_name}').items
-
-        logger.info('\n'.join([str((p.metadata.name, p.status.phase)) for p in cluster_pods])) # todo this is not printing the right thing
-        time.sleep(1)
+        finished = [1 for p in cluster_pods if p.metadata.status.phase in ['Completed', 'Failed']]
+        logger.info(f'Pod statuses (finished: {finished})\n' + '\n'.join([str((p.metadata.name, p.status.phase)) for p in cluster_pods]))
+        time.sleep(2)
         print('\n----------------------------\n')
 
 if __name__ == '__main__':
