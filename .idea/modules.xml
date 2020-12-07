@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/open-ai-gym.iml" filepath="$PROJECT_DIR$/open-ai-gym.iml" />
+      <module fileurl="file://$PROJECT_DIR$/rl-experiments.iml" filepath="$PROJECT_DIR$/rl-experiments.iml" />
     </modules>
   </component>
 </project>
