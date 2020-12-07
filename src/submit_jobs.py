@@ -63,7 +63,7 @@ def main():
         # jobs_ids = [j.name for j in cluster_jobs]
         cluster_pods = v1_core.list_namespaced_pod('default', label_selector=f'batch={batch_name}').items
 
-        logger.info('\n'.join([str((p.name, p.status.phase)) for p in cluster_pods])) # todo this is not printing the right thing
+        logger.info('\n'.join([str((p.metadata.name, p.status.phase)) for p in cluster_pods])) # todo this is not printing the right thing
         time.sleep(1)
         print('\n----------------------------\n')
 
