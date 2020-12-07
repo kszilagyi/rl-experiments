@@ -59,7 +59,7 @@ def main():
     finished = 0
     while finished < len(jobs):
         cluster_jobs = v1.list_namespaced_job('default', label_selector=f'batch={batch_name}').items
-        logger.info([j.status for j in cluster_jobs]) # todo this is not printing the right thing
+        logger.info([j for j in cluster_jobs]) # todo this is not printing the right thing
         time.sleep(1)
 
 if __name__ == '__main__':
