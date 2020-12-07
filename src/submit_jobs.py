@@ -24,7 +24,7 @@ def main():
     static_params= job_spec_module.static
     grid_search: Dict = job_spec_module.grid
     jobs = []
-    git_hash = str(subprocess.check_output('git rev-parse HEAD').strip())[:12]
+    git_hash = str(subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip())[:12]
 
     batch_name = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '_' + job_spec_module.name + '_' + git_hash
 
