@@ -6,6 +6,9 @@ metadata:
     batch: $BATCH_NAME
 spec:
   template:
+    metadata:
+      labels:
+        batch: $BATCH_NAME
     spec:
       containers:
         - name: job-container

@@ -45,21 +45,25 @@ def main():
     # Configs can be set in Configuration class directly or using helper utility
     config.load_kube_config()
 
-    v1 = client.BatchV1Api()
+    v1_batch = client.BatchV1Api()
+    v1_core = client.CoreV1Api()
     with open('src/job_template.yaml') as f:
         job_template = f.read()
     for idx, job in enumerate(jobs):
         job_desc = job_template.replace('$NAME', job['id']).replace('$IMAGE', args.docker_image)\
             .replace('$JOB_ID', job['id']).replace('$BATCH_NAME', batch_name)
-        v1.create_namespaced_job('default', yaml.safe_load(job_desc))
+        v1_batch.create_namespaced_job('default', yaml.safe_load(job_desc))
         if (idx + 1) % 100 == 0:
             logger.info(f'{idx + 1} jobs have been submitted')
 
     logger.info('All jobs have been submitted')
     finished = 0
     while finished < len(jobs):
-        cluster_jobs = v1.list_namespaced_job('default', label_selector=f'batch={batch_name}').items
-        logger.info([j for j in cluster_jobs]) # todo this is not printing the right thing
+        # cluster_jobs = v1_batch.list_namespaced_job('default', label_selector=f'batch={batch_name}').items
+        # jobs_ids = [j.name for j in cluster_jobs]
+        cluster_pods = v1_core.list_namespaced_pod('default', label_selector=f'batch={batch_name}').items
+
+        logger.info([p for p in cluster_pods]) # todo this is not printing the right thing
         time.sleep(1)
 
 if __name__ == '__main__':
