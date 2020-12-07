@@ -2,6 +2,7 @@ import argparse
 import importlib
 import itertools
 import json
+import subprocess
 import time
 from typing import Dict, Any
 from uuid import uuid4
@@ -23,7 +24,9 @@ def main():
     static_params= job_spec_module.static
     grid_search: Dict = job_spec_module.grid
     jobs = []
-    batch_name = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '_' + job_spec_module.name
+    git_hash = str(subprocess.check_output('git rev-parse HEAD').strip())[:12]
+
+    batch_name = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '_' + job_spec_module.name + '_' + git_hash
 
     all_combinations = list(itertools.product(*list(grid_search.values())))
     for combo in all_combinations:
