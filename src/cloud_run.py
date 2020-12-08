@@ -40,6 +40,7 @@ def main():
     blob = bucket.blob(cloud_root + 'params.json')
 
     params = json.loads(blob.download_as_text())
+    params['job_id'] = job_id
     status = 'SUCCESS'
     try:
         run(params, [])

@@ -19,10 +19,10 @@ class FileLogger(LoggerBackend):
                 logger.warn(f'Path {path} already exists')
                 raise FileExistsError(path)
             self.f = open(path, 'w')
-            self.f.write(','.join(self.columns) + '\n')
+            self.f.write(';'.join(self.columns) + '\n')
 
         padded_columns = [str(data[c]) if c in data else '' for c in self.columns]
-        self.f.write(','.join(padded_columns) + '\n')
+        self.f.write(';'.join(padded_columns) + '\n')
         self.f.flush()
 
     def close(self):

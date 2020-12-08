@@ -18,5 +18,8 @@ spec:
               value: $BATCH_NAME
             - name: JOB_ID
               value: $JOB_ID
+          resources:
+            requests:
+              cpu: "900m"
       restartPolicy: Never
   backoffLimit: 0

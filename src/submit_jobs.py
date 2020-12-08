@@ -27,7 +27,7 @@ def main():
     static_params= job_spec_module.static
     grid_search: Dict = job_spec_module.grid
     jobs = []
-    git_hash = str(subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip())[:12]
+    git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('ascii')[:12]
 
     batch_name = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '_' + job_spec_module.name + '_' + git_hash
 
@@ -71,9 +71,16 @@ def main():
     while finished < len(jobs):
         cluster_pods = v1_core.list_namespaced_pod('default', label_selector=f'batch={batch_name}').items
         finished = sum([1 for p in cluster_pods if p.status.phase in ['Succeeded', 'Failed']])
-        logger.info(f'Pod statuses (finished: {finished})\n' + '\n'.join([str((p.metadata.name, p.status.phase)) for p in cluster_pods]))
-        time.sleep(2)
-        print('\n----------------------------\n')
+        pending = sum([1 for p in cluster_pods if p.status.phase in ['Pending']])
+        succeeded = sum([1 for p in cluster_pods if p.status.phase in ['Succeeded']])
+        failed = sum([1 for p in cluster_pods if p.status.phase in ['Failed']])
+        running = sum([1 for p in cluster_pods if p.status.phase in ['Running']])
+
+        logger.info(f'Pod statuses: pending: {pending}, running: {running}, succeeded: {succeeded}, failed: {failed}')
+        time.sleep(10)
+
+    logger.info(f'Finished, batch name was: {batch_name}')
+
 
 if __name__ == '__main__':
     main()
