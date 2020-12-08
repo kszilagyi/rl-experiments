@@ -19,6 +19,8 @@ def main():
     parser = argparse.ArgumentParser('Run online')
     parser.add_argument('--job_spec_path', type=str)
     parser.add_argument('--docker_image', type=str)
+    parser.add_argument('--test', dest='test', action='store_const', default=False, const=True,
+                        help='Only submits the first job, easier for testing')
     args = parser.parse_args()
     job_spec_module: Any = importlib.import_module(args.job_spec_path)
     static_params= job_spec_module.static
@@ -37,6 +39,8 @@ def main():
         job['batch_name'] = batch_name
         jobs.append(job)
 
+    if args.test:
+        jobs = jobs[:1]
 
     storage_client = storage.Client()
     bucket = storage_client.bucket('rl-experiments')
@@ -52,18 +56,17 @@ def main():
     v1_core = client.CoreV1Api()
     with open('src/job_template.yaml') as f:
         job_template = f.read()
+    logger.info(f'Submitting {len(jobs)} jobs.')
     for idx, job in enumerate(jobs):
         job_desc = job_template.replace('$NAME', job['id']).replace('$IMAGE', args.docker_image)\
             .replace('$JOB_ID', job['id']).replace('$BATCH_NAME', batch_name)
         v1_batch.create_namespaced_job('default', yaml.safe_load(job_desc))
-        if (idx + 1) % 100 == 0:
+        if (idx + 1) % 50 == 0:
             logger.info(f'{idx + 1} jobs have been submitted')
 
     logger.info('All jobs have been submitted')
     finished = 0
     while finished < len(jobs):
-        # cluster_jobs = v1_batch.list_namespaced_job('default', label_selector=f'batch={batch_name}').items
-        # jobs_ids = [j.name for j in cluster_jobs]
         cluster_pods = v1_core.list_namespaced_pod('default', label_selector=f'batch={batch_name}').items
         finished = sum([1 for p in cluster_pods if p.status.phase in ['Succeeded', 'Failed']])
         logger.info(f'Pod statuses (finished: {finished})\n' + '\n'.join([str((p.metadata.name, p.status.phase)) for p in cluster_pods]))
