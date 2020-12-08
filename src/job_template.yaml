@@ -20,6 +20,6 @@ spec:
               value: $JOB_ID
           resources:
             requests:
-              cpu: "900m"
+              cpu: "800m"
       restartPolicy: Never
   backoffLimit: 0
