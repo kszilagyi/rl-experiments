@@ -1,4 +1,4 @@
-
+import bz2
 from typing import Dict, Any, List
 
 from src.environment import LoggerBackend
@@ -14,11 +14,11 @@ class FileLogger(LoggerBackend):
 
     def log(self, data: Dict[str, Any]):
         if self.f is None:
-            path = (OUTPUT_DIR / 'results.csv').resolve()
+            path = (OUTPUT_DIR / 'results.csv.bz2').resolve()
             if path.exists():
                 logger.warn(f'Path {path} already exists')
                 raise FileExistsError(path)
-            self.f = open(path, 'w')
+            self.f = bz2.open(path, 'w')
             self.f.write(';'.join(self.columns) + '\n')
 
         padded_columns = [str(data[c]) if c in data else '' for c in self.columns]
