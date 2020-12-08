@@ -22,6 +22,7 @@ def main():
     parser.add_argument('--test', dest='test', action='store_const', default=False, const=True,
                         help='Only submits the first job, easier for testing')
     args = parser.parse_args()
+    print(args)
     job_spec_module: Any = importlib.import_module(args.job_spec_path)
     static_params= job_spec_module.static
     grid_search: Dict = job_spec_module.grid
