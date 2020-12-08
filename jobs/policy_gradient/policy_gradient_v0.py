@@ -1,4 +1,4 @@
-name = 'policy-gradient-test-v0'
+name = 'policy-gradient-v0'
 
 static = {
     'algo_path': 'src.policy_gradient',
