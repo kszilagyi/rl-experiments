@@ -15,7 +15,8 @@ def main():
     storage_client = storage.Client()
     logger.info('Creating job params files')
     for blob in storage_client.list_blobs('rl-experiments', prefix=batch_name):
-        print(blob.name)
+        if blob.name.endswith('results.csv.bz2'):
+            print(blob.name)
 
 
 if __name__ == '__main__':
