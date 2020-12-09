@@ -22,7 +22,7 @@ def main():
     parser.add_argument('--test', dest='test', action='store_const', default=False, const=True,
                         help='Only submits the first job, easier for testing')
     args = parser.parse_args()
-    print(args)
+    logger.info(args)
     job_spec_module: Any = importlib.import_module(args.job_spec_path)
     static_params= job_spec_module.static
     grid_search: Dict = job_spec_module.grid
@@ -58,7 +58,7 @@ def main():
     v1_core = client.CoreV1Api()
     with open('src/job_template.yaml') as f:
         job_template = f.read()
-    logger.info(f'Submitting {len(jobs)} jobs.')
+    logger.info(f'Submitting {len(jobs)} jobs. ({batch_name})')
     for idx, job in enumerate(jobs):
         job_desc = job_template.replace('$NAME', job['id']).replace('$IMAGE', args.docker_image)\
             .replace('$JOB_ID', job['id']).replace('$BATCH_NAME', batch_name)
