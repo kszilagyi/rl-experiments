@@ -1,4 +1,4 @@
-name = 'policy-gradient-v0'
+name = 'policy-gradient-v0-fix-softmax'
 
 static = {
     'algo_path': 'src.policy_gradient',
