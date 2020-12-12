@@ -3,6 +3,7 @@ from tensorflow.python.keras.layers import Dense
 from tensorflow.python.keras.models import Model
 import tensorflow as tf
 
+
 class PolicyModel(Model):
     def __init__(self):
         super(PolicyModel, self).__init__()
@@ -12,8 +13,6 @@ class PolicyModel(Model):
         print(len(self.d1.trainable_variables))
 
     def call(self, x) -> tf.Tensor:
-        # x = self.input_layer(x)
-
         x = self.d1(x)
         x = self.d2(x)
         x = self.d3(x)
@@ -30,13 +29,10 @@ class ValueModel(Model):
         print(len(self.d1.trainable_variables))
 
     def call(self, x) -> tf.Tensor:
-        # x = self.input_layer(x)
-
         x = self.d1(x)
         x = self.d2(x)
         x = self.d3(x)
         return x
-
 
 
 def create_q_model():
