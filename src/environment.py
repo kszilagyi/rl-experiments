@@ -2,7 +2,7 @@ import random
 import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any, Dict, List, Tuple
 
 import numpy as np
 import tensorflow as tf
@@ -23,7 +23,7 @@ class Algo(ABC):
         pass
 
     @abstractmethod
-    def episode_end(self, t: int):
+    def episode_end(self, t: int) -> Tuple[int, List, List]:
         pass
 
 
@@ -92,9 +92,32 @@ class Environment:
                     observation = new_observation
 
                     if done or t + 1 == self.episode_length:
-                        training_steps += algo.episode_end(t)
+                        current_training_steps, gradients, weights = algo.episode_end(t)
+                        training_steps += current_training_steps
                         break
-                logger.log({'episode_return': episode_return}, episode_num=i_episode, sample_cnt=sample_cnt,
+                gradients = np.concatenate(gradients)
+                weights = np.concatenate([w.flatten() for w in weights])
+                if np.isnan(gradients).any():
+                    abs_mean_gradient = max_gradient = min_gradient = mean_gradient = np.nan
+                else:
+                    max_gradient = max(gradients, key=abs)
+                    mean_gradient = np.mean(gradients)
+                    abs_mean_gradient = np.mean(np.abs(gradients))
+                    min_gradient = min(gradients, key=abs)
+                if np.isnan(weights).any():
+                    abs_mean_weight = min_weight = max_weight = mean_weight = np.nan
+                else:
+                    max_weight = max(weights, key=abs)
+                    mean_weight = np.mean(weights)
+                    abs_mean_weight = np.mean(np.abs(weights))
+                    min_weight = min(weights, key=abs)
+                logger.log({'episode_return': episode_return,
+                            'abs_max_gradient': max_gradient, 'abs_min_gradient': min_gradient,
+                            'mean_gradient': mean_gradient, 'abs_mean_gradient': abs_mean_gradient,
+                            'abs_max_weight': max_weight, 'abs_min_weight': min_weight,
+                            'mean_weight': mean_weight, 'abs_mean_weight': abs_mean_weight},
+                           episode_num=i_episode,
+                           sample_cnt=sample_cnt,
                            elapsed_time=time.time() - start_time, training_steps=training_steps)
                 episode_returns.append(episode_return)
             return episode_returns

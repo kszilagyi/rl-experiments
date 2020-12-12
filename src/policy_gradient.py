@@ -1,5 +1,4 @@
 
-import gym
 import numpy as np
 import tensorflow as tf
 from tensorflow.python.ops.distributions.categorical import Categorical
@@ -7,7 +6,6 @@ from tensorflow.python.ops.distributions.categorical import Categorical
 from src.environment import Algo
 from src.model import PolicyModel
 
-env = gym.make('CartPole-v0').env
 
 
 optimizer = tf.keras.optimizers.SGD(learning_rate=0.1)
@@ -47,7 +45,6 @@ class PolicyGradient(Algo):
         gradients = tape.gradient(higher_prob, policy_model.trainable_variables)
         return sampled_action, gradients
 
-
     def action(self, observation, t):
         well_formed_obs = np.expand_dims(observation, axis=1).T
         sampled_actions, gradients = self._action(tf.constant(well_formed_obs), tf.constant(t))
@@ -70,7 +67,9 @@ class PolicyGradient(Algo):
         std = np.std(cumulative_rewards)
         cumulative_rewards = (cumulative_rewards - mean) / std
         cumulative_rewards = cumulative_rewards.tolist()
-        for time in range(t, -1, -1):
+        applied_gradients = []
+        for time in range(t, -1, -1): # todo is this wrong? Shouldn't we apply the gradients in one batch, try batch behind flag
             adjusted_gradients = [-g * (cumulative_rewards[time]) / t for g in self.gradients[time]]
             optimizer.apply_gradients(zip(adjusted_gradients, policy_model.trainable_variables))
-        return t + 1
+            applied_gradients.append(np.concatenate([a.numpy().flatten() for a in adjusted_gradients]))
+        return t + 1, applied_gradients, policy_model.get_weights()
