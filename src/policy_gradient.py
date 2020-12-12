@@ -7,14 +7,8 @@ from src.environment import Algo
 from src.model import PolicyModel
 
 
-
 optimizer = tf.keras.optimizers.SGD(learning_rate=0.1)
-# adam = tf.keras.optimizers.Adam(learning_rate=0.01) # todo probably this shouldn't be adam
 policy_model = PolicyModel()
-# value_model = ValueModel()
-
-
-PRINT_FREQ = 100
 GAMMA = 0.95
 
 
@@ -29,18 +23,10 @@ class PolicyGradient(Algo):
     @tf.function
     def _action(self, well_formed_obs, t):
         with tf.GradientTape() as tape:
-            # training=True is only needed if there are layers with different
-            # behavior during training versus inference (e.g. Dropout).
-            action_probabilities: tf.Tensor = policy_model(well_formed_obs, training=True)
-            action_probabilities = tf.math.maximum(action_probabilities, 1e-9)
-            log_action_probabilities = tf.math.log(action_probabilities)
-
-            dist = Categorical(probs=action_probabilities)
+            action_logits: tf.Tensor = policy_model(well_formed_obs, training=True)
+            dist = Categorical(logits=action_logits)
             sampled_action = dist.sample()
-            if sampled_action == 0:
-                higher_prob = log_action_probabilities[0, 0]
-            else:
-                higher_prob = log_action_probabilities[0, 1]
+            higher_prob = dist.log_prob(sampled_action)
 
         gradients = tape.gradient(higher_prob, policy_model.trainable_variables)
         return sampled_action, gradients

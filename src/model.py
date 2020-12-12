@@ -9,7 +9,6 @@ class PolicyModel(Model):
         self.d1 = Dense(10, activation='relu', name='128-layer')
         self.d2 = Dense(10, activation='relu')
         self.d3 = Dense(2)
-        self.sm = tf.keras.layers.Softmax()
         print(len(self.d1.trainable_variables))
 
     def call(self, x) -> tf.Tensor:
@@ -18,9 +17,6 @@ class PolicyModel(Model):
         x = self.d1(x)
         x = self.d2(x)
         x = self.d3(x)
-
-        # print('before softmax:' + str(x))
-        x = self.sm(x)
 
         return x
 

@@ -26,7 +26,8 @@ class FileLogger(LoggerBackend):
         self.f.flush()
 
     def close(self):
-        self.f.close()
+        if self.f is not None:
+            self.f.close()
 
 
 
