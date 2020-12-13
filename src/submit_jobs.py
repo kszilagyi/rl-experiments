@@ -54,15 +54,14 @@ def main():
     # Configs can be set in Configuration class directly or using helper utility
     config.load_kube_config()
 
-    v1_batch = client.BatchV1Api()
     v1_core = client.CoreV1Api()
-    with open('src/job_template.yaml') as f:
-        job_template = f.read()
+    with open('src/pod_template.yaml') as f:
+        pod_template = f.read()
     logger.info(f'Submitting {len(jobs)} jobs. ({batch_name})')
     for idx, job in enumerate(jobs):
-        job_desc = job_template.replace('$NAME', job['id']).replace('$IMAGE', args.docker_image)\
+        job_desc = pod_template.replace('$NAME', job['id']).replace('$IMAGE', args.docker_image)\
             .replace('$JOB_ID', job['id']).replace('$BATCH_NAME', batch_name)
-        v1_batch.create_namespaced_job('default', yaml.safe_load(job_desc))
+        v1_core.create_namespaced_pod('default', yaml.safe_load(job_desc))
         if (idx + 1) % 50 == 0:
             logger.info(f'{idx + 1} jobs have been submitted')
 

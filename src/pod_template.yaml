@@ -1,0 +1,19 @@
+apiVersion: v1
+kind: Pod
+metadata:
+  name: $NAME
+  labels:
+    batch: $BATCH_NAME
+spec:
+  containers:
+    - name: job-container
+      image: $IMAGE
+      env:
+        - name: BATCH_NAME
+          value: $BATCH_NAME
+        - name: JOB_ID
+          value: $JOB_ID
+      resources:
+        requests:
+          cpu: "800m"
+  restartPolicy: Never
