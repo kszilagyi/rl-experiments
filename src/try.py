@@ -16,10 +16,10 @@ def main():
                     Logger([LiveGraphLogger('episode_num', 'episode_return'),
                             LiveGraphLogger('episode_num', 'abs_max_gradient'),
                             LiveGraphLogger('episode_num', 'abs_min_gradient'),
-                            LiveGraphLogger('episode_num', 'abs_min_weight'),
-                            LiveGraphLogger('episode_num', 'abs_max_weight'),
-                            LiveGraphLogger('episode_num', 'abs_mean_weight'),
-                            LiveGraphLogger('episode_num', 'abs_mean_gradient'),
+                            # LiveGraphLogger('episode_num', 'abs_min_weight'),
+                            # LiveGraphLogger('episode_num', 'abs_max_weight'),
+                            # LiveGraphLogger('episode_num', 'abs_mean_weight'),
+                            # LiveGraphLogger('episode_num', 'abs_mean_gradient'),
 
                             FileLogger(MANDATORY_COLUMNS + ['episode_return'])], {})))
 
