@@ -17,6 +17,7 @@ from src.logg import logg
 
 logger = logg(__name__)
 
+
 def random_search_combos(job_spec_module):
     random_search: Dict = job_spec_module.random_search
     all_random_combinations = list(itertools.product(*list(random_search.values())))

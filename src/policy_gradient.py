@@ -1,3 +1,4 @@
+from typing import Dict
 
 import numpy as np
 import tensorflow as tf
@@ -16,9 +17,11 @@ class PolicyGradient(Algo):
     def start_episode(self):
         pass
 
-    def __init__(self, episode_length):
+    def __init__(self, episode_length: int, max_returns: np.ndarray, hyperparams: Dict):
         self.grads = [None] * episode_length
         self.rewards = [0.0] * episode_length
+        self.hyperparams = hyperparams
+        self.max_returns = max_returns
 
     @tf.function
     def _action(self, well_formed_obs, t):
@@ -43,20 +46,36 @@ class PolicyGradient(Algo):
 
     def episode_end(self, t):
         cum_reward = 0
-        cum_rewards = [None] * (t + 1)
+        returns = [None] * (t + 1)
 
         for time in range(t, -1, -1):
             cum_reward = self.rewards[time] + cum_reward * GAMMA
-            cum_rewards[time] = cum_reward
-            cum_rewards = np.array(cum_rewards)
-        mean = np.mean(cum_rewards)
-        std = np.std(cum_rewards)
-        cum_rewards = (cum_rewards - mean) / std
-        cum_rewards = cum_rewards.tolist()
+            returns[time] = cum_reward
+        returns = np.array(returns)
+        if self.hyperparams['normalise_with_max_returns']:
+            returns -= self.max_returns
+
+        if self.hyperparams['center_returns']:
+            mean = np.mean(returns)
+        else:
+            mean = 0
+        if self.hyperparams['normalise_returns']:
+            std = np.std(returns)
+            if std < 1e-6:
+                std = 1
+        else:
+            std = 1
+        returns = (returns - mean) / std
+        returns = returns.tolist()
         grads_for_debug = []
         grad_acc = None
+
+        if self.hyperparams['normalise_returns_with_episode_length']:
+            episode_length_divider = t
+        else:
+            episode_length_divider = 1
         for time in range(t, -1, -1):
-            adjusted_grads = [-g * (cum_rewards[time]) / t for g in self.grads[time]]
+            adjusted_grads = [-g * (returns[time]) / episode_length_divider for g in self.grads[time]]
             if grad_acc is None:
                 grad_acc = adjusted_grads
             else:
