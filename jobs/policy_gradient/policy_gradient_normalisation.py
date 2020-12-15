@@ -9,13 +9,7 @@ static = {
     'normalise_returns_with_episode_length': True,
 }
 
-grid = {
-    'seed': list(range(100)),
-
-    'normalise_with_max_returns': [False, True],
-
-}
-
+seeds = list(range(100))
 # random_search_n = 8
 # random_search = {
 #     'normalise_returns': [False, True],
@@ -24,9 +18,11 @@ grid = {
 #     'lr': [1e-4, 1e-3, 1e-2, 1e-1]
 # }
 
-list_search = [
+search = [
     {
         'grid': {
+            'seed': seeds,
+            'normalise_with_max_returns': [False, True],
             'normalise_returns': [True],
             'center_returns': [True],
             'lr': [1e-1]
@@ -34,6 +30,8 @@ list_search = [
     },
     {
         'grid': {
+            'seed': seeds,
+            'normalise_with_max_returns': [True],
             'normalise_returns': [False],
             'center_returns': [False, True],
             'lr': [1e-4, 1e-3, 1e-2, 1e-1]

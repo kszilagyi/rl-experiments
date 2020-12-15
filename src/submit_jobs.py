@@ -18,12 +18,44 @@ from src.logg import logg
 logger = logg(__name__)
 
 
-def random_search_combos(job_spec_module):
-    random_search: Dict = job_spec_module.random_search
-    all_random_combinations = list(itertools.product(*list(random_search.values())))
-    random_search_n: int = job_spec_module.random_search_n
-    random.shuffle(all_random_combinations)
-    return all_random_combinations[:random_search_n]
+def random_search_combos(search_spec):
+    if 'random_search' in search_spec:
+        random_search: Dict = search_spec['random_search']
+        all_random_combinations = list(itertools.product(*list(random_search.values())))
+        random_search_n: int = search_spec.random_search_n
+        random.shuffle(all_random_combinations)
+        return all_random_combinations[:random_search_n]
+    else:
+        return []
+
+
+def expand_parameters(search_spec):
+    random_search: Dict = search_spec['random_search'] if 'random_search' in search_spec else {}
+    random_combinations = random_search_combos(search_spec)
+
+    grid_search: Dict = search_spec['grid']
+
+    all_grid_combinations = list(itertools.product(*list(grid_search.values())))
+    all_combinations = []
+    if random_combinations == []:
+        for g in all_grid_combinations:
+            all_combinations.append(g)
+    else:
+        for r in random_combinations:
+            for g in all_grid_combinations:
+                all_combinations.append(r + g)
+    return all_combinations, list(grid_search.keys()) + list(random_search.keys())
+
+
+def all_combinations(search_specs):
+    all_combinations = []
+    all_keys = []
+    for search_spec in search_specs:
+        combos, keys = expand_parameters(search_spec)
+        all_combinations.extend(combos)
+        all_keys.append(keys)
+    assert len(all_keys) == 0 or all_keys.count(all_keys[0]) == len(all_keys), 'KeyNotSame'# the keys are same and in the same order in all
+    return all_combinations, all_keys[0] if len(all_keys) > 0 else []
 
 
 # todo add coordinate search
@@ -36,25 +68,15 @@ def main():
     args = parser.parse_args()
     logger.info(args)
     job_spec_module: Any = importlib.import_module(args.job_spec_path)
-    static_params= job_spec_module.static
-    random_search: Dict = job_spec_module.random_search
-    random_combinations = random_search_combos(job_spec_module)
 
-    grid_search: Dict = job_spec_module.grid
+    static_params = job_spec_module.static
     jobs = []
     git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('ascii')[:12]
-
     batch_name = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '_' + job_spec_module.name + '_' + git_hash
-
-    all_grid_combinations = list(itertools.product(*list(grid_search.values())))
-    all_combinations = []
-    for r in random_combinations:
-        for g in all_grid_combinations:
-            all_combinations.append(r + g)
-
-    for combo in all_combinations:
+    all_combos, all_keys = all_combinations(job_spec_module.search)
+    for combo in all_combos:
         job = static_params.copy()
-        for idx, key in enumerate(list(random_search.keys()) + list(grid_search.keys())):
+        for idx, key in enumerate(all_keys):
             job[key] = combo[idx]
         job['id'] = str(uuid4())
         job['batch_name'] = batch_name
@@ -69,7 +91,6 @@ def main():
     for job in jobs:
         blob = bucket.blob(batch_name + '/' + job['id'] + '/' + 'params.json')
         blob.upload_from_string(json.dumps(job, indent=4))
-
 
     # Configs can be set in Configuration class directly or using helper utility
     config.load_kube_config()
