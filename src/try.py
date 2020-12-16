@@ -3,12 +3,11 @@ from src.live_graph_logger import LiveGraphLogger
 
 
 def main():
-    env = 'CartPole-v1'
     hyperparams = { 'algo_path': 'src.policy_gradient',
                     'algo_name': 'PolicyGradient',
                     'episode_length': 100,
                     'environment': 'CartPole-v1',
-                    'num_episodes': 1000,
+                    'num_episodes': 50,
                     'normalise_returns_with_episode_length': True,
                     'seed': 2,
                     'normalise_with_max_returns': True,
