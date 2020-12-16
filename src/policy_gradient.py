@@ -10,7 +10,6 @@ from src.model import PolicyModel
 
 optimizer = tf.keras.optimizers.SGD(learning_rate=0.1)
 policy_model = PolicyModel()
-GAMMA = 0.95
 
 
 class PolicyGradient(Algo):
@@ -49,11 +48,11 @@ class PolicyGradient(Algo):
         returns = [None] * (t + 1)
 
         for time in range(t, -1, -1):
-            cum_reward = self.rewards[time] + cum_reward * GAMMA
+            cum_reward = self.rewards[time] + cum_reward * self.hyperparams['gamma']
             returns[time] = cum_reward
         returns = np.array(returns)
         if self.hyperparams['normalise_with_max_returns']:
-            returns -= self.max_returns
+            returns -= self.max_returns[:len(returns)]
 
         if self.hyperparams['center_returns']:
             mean = np.mean(returns)

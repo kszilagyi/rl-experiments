@@ -1,19 +1,23 @@
-import importlib
-import gym
-
-from src.environment import Environment, Logger, MANDATORY_COLUMNS
-from src.filelogger import FileLogger
-from src.jobspec import job_specs
+from src.cloud_run import run
 from src.live_graph_logger import LiveGraphLogger
-from src.policy_gradient import PolicyGradient
 
 
 def main():
-    episode_length = 100
-    algo = PolicyGradient(episode_length=episode_length)
-    env = Environment(num_episodes=1000, episode_length=episode_length, env_creator=lambda: gym.make('CartPole-v1'), algo=algo)
-    print(env.train(0,
-                    Logger([LiveGraphLogger('episode_num', 'episode_return'),
+    env = 'CartPole-v1'
+    hyperparams = { 'algo_path': 'src.policy_gradient',
+                    'algo_name': 'PolicyGradient',
+                    'episode_length': 100,
+                    'environment': 'CartPole-v1',
+                    'num_episodes': 1000,
+                    'normalise_returns_with_episode_length': True,
+                    'seed': 2,
+                    'normalise_with_max_returns': True,
+                    'normalise_returns': False,
+                    'center_returns': False,
+                    'lr': 1e-1,
+                    'gamma': 0.95}
+
+    run(hyperparams, [LiveGraphLogger('episode_num', 'episode_return'),
                             LiveGraphLogger('episode_num', 'abs_max_gradient'),
                             LiveGraphLogger('episode_num', 'abs_min_gradient'),
                             # LiveGraphLogger('episode_num', 'abs_min_weight'),
@@ -21,7 +25,7 @@ def main():
                             # LiveGraphLogger('episode_num', 'abs_mean_weight'),
                             # LiveGraphLogger('episode_num', 'abs_mean_gradient'),
 
-                            FileLogger(MANDATORY_COLUMNS + ['episode_return'])], {})))
+                          ])
 
 
 if __name__ == '__main__':

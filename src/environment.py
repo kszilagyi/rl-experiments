@@ -72,6 +72,7 @@ class Environment:
         np.random.seed(seed)
         random.seed(seed)
         env.seed(seed)
+        env.action_space.seed(seed)
         tf.random.set_seed(seed)
         episode_returns = []
         sample_cnt = 0
