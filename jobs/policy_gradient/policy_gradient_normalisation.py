@@ -1,4 +1,4 @@
-name = 'policy-gradient-parameter-search'
+name = 'policy-gradient-normalisation'
 
 static = {
     'algo_path': 'src.policy_gradient',

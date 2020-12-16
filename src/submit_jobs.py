@@ -73,6 +73,7 @@ def main():
     jobs = []
     git_hash = subprocess.check_output(['git', 'rev-parse', 'HEAD']).strip().decode('ascii')[:12]
     batch_name = datetime.datetime.now().strftime('%Y-%m-%d-%H-%M-%S') + '_' + job_spec_module.name + '_' + git_hash
+    assert len(batch_name) <= 63, batch_name
     all_combos, all_keys = all_combinations(job_spec_module.search)
     for combo in all_combos:
         job = static_params.copy()
