@@ -5,12 +5,12 @@ static = {
     'algo_name': 'PolicyGradient',
     'episode_length': 200,
     'environment': 'CartPole-v1',
-    'num_episodes': 100,
+    'num_episodes': 1000,
     'normalise_returns_with_episode_length': True,
     'gamma': 0.95,
 }
 
-seeds = list(range(1)) + [1]
+seeds = list(range(100))
 # random_search_n = 8
 # random_search = {
 #     'normalise_returns': [False, True],
