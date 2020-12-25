@@ -89,9 +89,12 @@ def main():
     storage_client = storage.Client()
     bucket = storage_client.bucket('rl-experiments')
     logger.info('Creating job params files')
-    for job in jobs:
+    # todo parallelise
+    for idx, job in enumerate(jobs):
         blob = bucket.blob(batch_name + '/' + job['id'] + '/' + 'params.json')
         blob.upload_from_string(json.dumps(job, indent=4))
+        if (idx + 1) % 50 == 0:
+            logger.info(f'{idx + 1} job param file have been created')
 
     # Configs can be set in Configuration class directly or using helper utility
     config.load_kube_config()
