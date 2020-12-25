@@ -14,7 +14,8 @@ def main():
                     'normalise_returns': False,
                     'center_returns': False,
                     'lr': 1e-1,
-                    'gamma': 0.95}
+                    'gamma': 0.95,
+                    'optimizer': 'sgd'}
 
     run(hyperparams, [LiveGraphLogger('episode_num', 'episode_return'),
                             LiveGraphLogger('episode_num', 'abs_max_gradient'),

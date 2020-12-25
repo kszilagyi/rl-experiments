@@ -19,7 +19,14 @@ class PolicyGradient(Algo):
         self.rewards = [0.0] * episode_length
         self.hyperparams = hyperparams
         self.max_returns = max_returns
-        self.optimizer = tf.keras.optimizers.SGD(learning_rate=hyperparams['lr'])
+        optimizer_name = hyperparams['optimizer']
+        if optimizer_name == 'sgd':
+            optimizer = tf.keras.optimizers.SGD
+        elif optimizer_name == 'adam':
+            optimizer = tf.keras.optimizers.Adam
+        else:
+            assert(False)
+        self.optimizer = optimizer(learning_rate=hyperparams['lr'])
 
     @tf.function
     def _action(self, well_formed_obs, t):
