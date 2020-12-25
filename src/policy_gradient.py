@@ -7,8 +7,6 @@ from tensorflow.python.ops.distributions.categorical import Categorical
 from src.environment import Algo
 from src.model import PolicyModel
 
-
-optimizer = tf.keras.optimizers.SGD(learning_rate=0.1)
 policy_model = PolicyModel()
 
 
@@ -21,6 +19,7 @@ class PolicyGradient(Algo):
         self.rewards = [0.0] * episode_length
         self.hyperparams = hyperparams
         self.max_returns = max_returns
+        self.optimizer = tf.keras.optimizers.SGD(learning_rate=hyperparams['lr'])
 
     @tf.function
     def _action(self, well_formed_obs, t):
@@ -81,5 +80,5 @@ class PolicyGradient(Algo):
                 grad_acc = [g + acc for g, acc in zip(adjusted_grads, grad_acc)]
             grads_for_debug.append(np.concatenate([a.numpy().flatten() for a in adjusted_grads]))
 
-        optimizer.apply_gradients(zip(grad_acc, policy_model.trainable_variables))
+        self.optimizer.apply_gradients(zip(grad_acc, policy_model.trainable_variables))
         return t + 1, grads_for_debug, policy_model.get_weights()
