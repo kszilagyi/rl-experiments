@@ -20,7 +20,8 @@ def main():
                     'optimizer': 'sgd'}
 
     run(hyperparams, [
-        LiveGraphLogger('episode_num', 'episode_return'),
+                            LiveGraphLogger('episode_num', 'episode_return'),
+                            LiveGraphLogger('sample_cnt', 'episode_return'),
                             LiveGraphLogger('episode_num', 'abs_max_gradient'),
                             LiveGraphLogger('episode_num', 'abs_min_gradient'),
                             # LiveGraphLogger('episode_num', 'abs_min_weight'),
