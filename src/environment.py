@@ -61,7 +61,7 @@ class Logger:
 
 @dataclass(frozen=True)
 class Environment:
-    num_episodes: int
+    max_sample_cnt: int
     episode_length: int
     env_creator: Any
     algo: Algo
@@ -78,8 +78,9 @@ class Environment:
         sample_cnt = 0
         start_time = time.time()
         training_steps = 0
+        episode_num = 0
         try:
-            for i_episode in range(self.num_episodes):
+            while sample_cnt < self.max_sample_cnt:
                 observation = env.reset()
                 algo.start_episode()
                 episode_return = 0
@@ -117,10 +118,11 @@ class Environment:
                             'mean_gradient': mean_gradient, 'abs_mean_gradient': abs_mean_gradient,
                             'abs_max_weight': max_weight, 'abs_min_weight': min_weight,
                             'mean_weight': mean_weight, 'abs_mean_weight': abs_mean_weight},
-                           episode_num=i_episode,
+                           episode_num=episode_num,
                            sample_cnt=sample_cnt,
                            elapsed_time=time.time() - start_time, training_steps=training_steps)
                 episode_returns.append(episode_return)
+                episode_num += 1
             return episode_returns
         finally:
             env.close()
