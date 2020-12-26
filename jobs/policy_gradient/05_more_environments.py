@@ -6,7 +6,7 @@ static = {
     'algo_path': 'src.policy_gradient',
     'algo_name': 'PolicyGradient',
     'episode_length': 200,
-    'environment': 'CartPole-v1',
+
     'max_sample_cnt': 500*200,
     'gamma': 0.95,
     'normalise_with_max_returns': True,
@@ -23,6 +23,7 @@ search = [
             'lr': [0.0025, 0.005, 0.01, 0.02, 0.04],
             'optimizer': ['adam'],
             'normalise_returns_with_episode_length': [True],
+            'environment': ['CartPole-v1', 'MountainCar-v0', 'LunarLander-v2'],
         }
     },
     {

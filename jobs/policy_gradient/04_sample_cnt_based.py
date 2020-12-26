@@ -9,8 +9,8 @@ static = {
     'environment': 'CartPole-v1',
     'max_sample_cnt': 500*200,
     'gamma': 0.95,
-    'normalise_with_max_returns': True,
-    'normalise_returns': False,
+    'normalise_with_max_returns': False,
+    'normalise_returns': True,
     'center_returns': True,
 }
 

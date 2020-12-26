@@ -14,7 +14,7 @@ def main():
                     'seed': 2,
                     'normalise_with_max_returns': True,
                     'normalise_returns': False,
-                    'center_returns': False,
+                    'center_returns': True,
                     'lr': 1e-1,
                     'gamma': 0.95,
                     'optimizer': 'sgd'}
