@@ -15,7 +15,7 @@ static = {
     'model_save_freq': 100000000,
 }
 
-seeds = list(range(1))
+seeds = list(range(50))
 
 search = [
     {
