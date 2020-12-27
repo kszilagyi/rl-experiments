@@ -3,9 +3,12 @@ import time
 from abc import ABC, abstractmethod
 from dataclasses import dataclass
 from typing import Any, Dict, List, Tuple
-
+import matplotlib.pyplot as plt
 import numpy as np
 import tensorflow as tf
+from matplotlib import animation
+
+from src.logg import OUTPUT_DIR
 
 
 class Algo(ABC):
@@ -24,6 +27,10 @@ class Algo(ABC):
 
     @abstractmethod
     def episode_end(self, t: int) -> Tuple[int, List, List]:
+        pass
+
+    @abstractmethod
+    def init_model(self, inputs: int):
         pass
 
 
@@ -58,17 +65,34 @@ class Logger:
         for b in self.backends:
             b.close()
 
+# copied from: https://nbviewer.jupyter.org/github/patrickmineault/xcorr-notebooks/blob/master/Render%20OpenAI%20gym%20as%20GIF.ipynb
+def display_frames_as_gif(path, frames):
+    """
+    Displays a list of frames as a gif, with controls
+    """
+    plt.figure(figsize=(frames[0].shape[1] / 72.0, frames[0].shape[0] / 72.0), dpi = 72)
+    patch = plt.imshow(frames[0])
+    plt.axis('off')
+
+    def animate(i):
+        patch.set_data(frames[i])
+
+    anim = animation.FuncAnimation(plt.gcf(), animate, frames = len(frames), interval=50)
+    anim.save(path)
+
 
 @dataclass(frozen=True)
 class Environment:
     max_sample_cnt: int
     episode_length: int
+    render_freq: int
     env_creator: Any
     algo: Algo
 
     def train(self, seed: int, logger: Logger):
         algo = self.algo
         env = self.env_creator()
+        algo.init_model(env.action_space.n)
         np.random.seed(seed)
         random.seed(seed)
         env.seed(seed)
@@ -80,11 +104,18 @@ class Environment:
         training_steps = 0
         episode_num = 0
         try:
-            while sample_cnt < self.max_sample_cnt:
+            one_last_render = True
+            while sample_cnt < self.max_sample_cnt or one_last_render:
+                if sample_cnt >= self.max_sample_cnt:
+                    one_last_render = False
                 observation = env.reset()
                 algo.start_episode()
                 episode_return = 0
+                render = (episode_num + 1) % self.render_freq == 0 or sample_cnt >= self.max_sample_cnt
+                frames = []
                 for t in range(self.episode_length):
+                    if render:
+                        frames.append(env.render(mode = 'rgb_array'))
                     action = algo.action(observation, t)
                     new_observation, reward, done, info = env.step(action)
                     episode_return += reward
@@ -122,6 +153,8 @@ class Environment:
                            sample_cnt=sample_cnt,
                            elapsed_time=time.time() - start_time, training_steps=training_steps)
                 episode_returns.append(episode_return)
+                if render:
+                    display_frames_as_gif(OUTPUT_DIR / f'{episode_num}.gif', frames)
                 episode_num += 1
             return episode_returns
         finally:

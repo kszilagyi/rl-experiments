@@ -27,7 +27,7 @@ def run(params: Dict, extra_logging_backends: List[LoggerBackend]):
         algo = algo_creator(episode_length=episode_length, max_returns=max_possible_returns(env_name, episode_length, gamma),
                             hyperparams=params)
         env = Environment(max_sample_cnt=params['max_sample_cnt'], episode_length=episode_length,
-                          env_creator=lambda: gym.make(env_name), algo=algo)
+                          env_creator=lambda: gym.make(env_name), algo=algo, render_freq=params['render_freq'])
         env.train(params['seed'], Logger([FileLogger(list(params.keys()) + MANDATORY_COLUMNS + ['episode_return'])]
                                          + extra_logging_backends, params))
     except BaseException as e:

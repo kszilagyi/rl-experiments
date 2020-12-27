@@ -5,13 +5,14 @@ name = os.path.basename(__file__).replace('_', '-')
 static = {
     'algo_path': 'src.policy_gradient',
     'algo_name': 'PolicyGradient',
-    'episode_length': 200,
 
-    'max_sample_cnt': 500*200,
+    'max_sample_cnt': 1000*200,
     'gamma': 0.95,
-    'normalise_with_max_returns': True,
-    'normalise_returns': False,
+    'normalise_with_max_returns': False,
+    'normalise_returns': True,
     'center_returns': True,
+    'optimizer': 'adam',
+    'render_freq': 100000000,
 }
 
 seeds = list(range(100))
@@ -20,26 +21,19 @@ search = [
     {
         'grid': {
             'seed': seeds,
-            'lr': [0.0025, 0.005, 0.01, 0.02, 0.04],
-            'optimizer': ['adam'],
-            'normalise_returns_with_episode_length': [True],
-            'environment': ['CartPole-v1', 'MountainCar-v0', 'LunarLander-v2'],
+            'normalise_returns_with_episode_length': [True, False],
+            'environment': ['CartPole-v1', 'MountainCar-v0'],
+            'episode_length': 200,
+            'lr': [0.0125, 0.0025, 0.005]
         }
     },
     {
         'grid': {
             'seed': seeds,
-            'lr': [0.025, 0.05, 0.1, 0.2, 0.4],
-            'optimizer': ['sgd'],
-            'normalise_returns_with_episode_length': [True],
-        }
-    },
-    {
-        'grid': {
-            'seed': seeds,
-            'lr': [0.01],
-            'optimizer': ['adam'],
-            'normalise_returns_with_episode_length': [False],
+            'normalise_returns_with_episode_length': [True, False],
+            'environment': ['LunarLander-v2'],
+            'episode_length': 1000,
+            'lr': [0.0125, 0.0025, 0.005]
         }
     },
 ]

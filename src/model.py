@@ -5,11 +5,11 @@ import tensorflow as tf
 
 
 class PolicyModel(Model):
-    def __init__(self):
+    def __init__(self, outputs):
         super(PolicyModel, self).__init__()
         self.d1 = Dense(10, activation='relu', name='128-layer')
         self.d2 = Dense(10, activation='relu')
-        self.d3 = Dense(2)
+        self.d3 = Dense(outputs)
         print(len(self.d1.trainable_variables))
 
     def call(self, x) -> tf.Tensor:

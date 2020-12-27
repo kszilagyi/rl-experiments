@@ -7,7 +7,6 @@ from tensorflow.python.ops.distributions.categorical import Categorical
 from src.environment import Algo
 from src.model import PolicyModel
 
-policy_model = PolicyModel()
 
 
 class PolicyGradient(Algo):
@@ -28,15 +27,18 @@ class PolicyGradient(Algo):
             assert(False)
         self.optimizer = optimizer(learning_rate=hyperparams['lr'])
 
+    def init_model(self, inputs: int):
+        self.policy_model = PolicyModel(inputs)
+
     @tf.function
     def _action(self, well_formed_obs, t):
         with tf.GradientTape() as tape:
-            action_logits: tf.Tensor = policy_model(well_formed_obs, training=True)
+            action_logits: tf.Tensor = self.policy_model(well_formed_obs, training=True)
             dist = Categorical(logits=action_logits)
             sampled_action = dist.sample()
             higher_prob = dist.log_prob(sampled_action)
 
-        grads = tape.gradient(higher_prob, policy_model.trainable_variables)
+        grads = tape.gradient(higher_prob, self.policy_model.trainable_variables)
         return sampled_action, grads
 
     def action(self, observation, t):
@@ -87,5 +89,5 @@ class PolicyGradient(Algo):
                 grad_acc = [g + acc for g, acc in zip(adjusted_grads, grad_acc)]
             grads_for_debug.append(np.concatenate([a.numpy().flatten() for a in adjusted_grads]))
 
-        self.optimizer.apply_gradients(zip(grad_acc, policy_model.trainable_variables))
-        return t + 1, grads_for_debug, policy_model.get_weights()
+        self.optimizer.apply_gradients(zip(grad_acc, self.policy_model.trainable_variables))
+        return t + 1, grads_for_debug, self.policy_model.get_weights()
