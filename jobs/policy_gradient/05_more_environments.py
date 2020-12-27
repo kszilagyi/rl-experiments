@@ -12,7 +12,7 @@ static = {
     'normalise_returns': True,
     'center_returns': True,
     'optimizer': 'adam',
-    'render_freq': 100000000,
+    'model_save_freq': 100000000,
 }
 
 seeds = list(range(100))
@@ -23,7 +23,7 @@ search = [
             'seed': seeds,
             'normalise_returns_with_episode_length': [True, False],
             'environment': ['CartPole-v1', 'MountainCar-v0'],
-            'episode_length': 200,
+            'episode_length': [200],
             'lr': [0.0125, 0.0025, 0.005]
         }
     },
@@ -32,7 +32,7 @@ search = [
             'seed': seeds,
             'normalise_returns_with_episode_length': [True, False],
             'environment': ['LunarLander-v2'],
-            'episode_length': 1000,
+            'episode_length': [1000],
             'lr': [0.0125, 0.0025, 0.005]
         }
     },

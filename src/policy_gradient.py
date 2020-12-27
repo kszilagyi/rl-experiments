@@ -30,6 +30,9 @@ class PolicyGradient(Algo):
     def init_model(self, inputs: int):
         self.policy_model = PolicyModel(inputs)
 
+    def save_model(self, path: str):
+        self.policy_model.save_weights(path)
+
     @tf.function
     def _action(self, well_formed_obs, t):
         with tf.GradientTape() as tape:

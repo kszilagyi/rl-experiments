@@ -33,6 +33,10 @@ class Algo(ABC):
     def init_model(self, inputs: int):
         pass
 
+    @abstractmethod
+    def save_model(self, path: str):
+        pass
+
 
 class LoggerBackend(ABC):
     @abstractmethod
@@ -85,7 +89,7 @@ def display_frames_as_gif(path, frames):
 class Environment:
     max_sample_cnt: int
     episode_length: int
-    render_freq: int
+    model_save_freq: int
     env_creator: Any
     algo: Algo
 
@@ -104,18 +108,16 @@ class Environment:
         training_steps = 0
         episode_num = 0
         try:
-            one_last_render = True
-            while sample_cnt < self.max_sample_cnt or one_last_render:
+            one_last_model_save = True
+            while sample_cnt < self.max_sample_cnt or one_last_model_save:
                 if sample_cnt >= self.max_sample_cnt:
-                    one_last_render = False
+                    one_last_model_save = False
                 observation = env.reset()
                 algo.start_episode()
                 episode_return = 0
-                render = (episode_num + 1) % self.render_freq == 0 or sample_cnt >= self.max_sample_cnt
+                save_model = (episode_num + 1) % self.model_save_freq == 0 or sample_cnt >= self.max_sample_cnt
                 frames = []
                 for t in range(self.episode_length):
-                    if render:
-                        frames.append(env.render(mode = 'rgb_array'))
                     action = algo.action(observation, t)
                     new_observation, reward, done, info = env.step(action)
                     episode_return += reward
@@ -153,8 +155,10 @@ class Environment:
                            sample_cnt=sample_cnt,
                            elapsed_time=time.time() - start_time, training_steps=training_steps)
                 episode_returns.append(episode_return)
-                if render:
-                    display_frames_as_gif(OUTPUT_DIR / f'{episode_num}.gif', frames)
+                if save_model:
+                    save_dir = OUTPUT_DIR / f'model_save_episode_{episode_num}'
+                    save_dir.mkdir(parents=True)
+                    self.algo.save_model(save_dir / 'ckpt')
                 episode_num += 1
             return episode_returns
         finally:

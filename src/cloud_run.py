@@ -27,13 +27,24 @@ def run(params: Dict, extra_logging_backends: List[LoggerBackend]):
         algo = algo_creator(episode_length=episode_length, max_returns=max_possible_returns(env_name, episode_length, gamma),
                             hyperparams=params)
         env = Environment(max_sample_cnt=params['max_sample_cnt'], episode_length=episode_length,
-                          env_creator=lambda: gym.make(env_name), algo=algo, render_freq=params['render_freq'])
+                          env_creator=lambda: gym.make(env_name), algo=algo, model_save_freq=params['model_save_freq'])
         env.train(params['seed'], Logger([FileLogger(list(params.keys()) + MANDATORY_COLUMNS + ['episode_return'])]
                                          + extra_logging_backends, params))
     except BaseException as e:
         logger.error(traceback.format_exc())
         raise e
 
+
+def upload_files(cloud_root, local_root, subdir, bucket):
+    local_current = local_root if subdir is None else local_root / subdir
+    for name in os.listdir(local_current):
+        full_path = local_current / name
+        if full_path.is_file():
+            print(cloud_root + 'job_output/' + name)
+            blob = bucket.blob(cloud_root + (f'job_output/{subdir}/' if subdir is not None else 'job_output/') + name)
+            blob.upload_from_filename(str(full_path))
+        else:
+            upload_files(cloud_root, local_root, (subdir + "/" + name) if subdir is not None else name, bucket) # recurse into directories
 
 def main():
     storage_client = storage.Client(project='rl-experiments-296208')
@@ -54,12 +65,7 @@ def main():
     finally:
         with open(OUTPUT_DIR / 'result.json', 'w') as f:
             json.dump({'status': status}, f)
-        for name in os.listdir(OUTPUT_DIR):
-            full_path = OUTPUT_DIR / name
-            if full_path.is_file():
-                print(cloud_root + 'job_output/' + name)
-                blob = bucket.blob(cloud_root + 'job_output/' + name)
-                blob.upload_from_filename(str(full_path))
+        upload_files(cloud_root, OUTPUT_DIR, None, bucket)
 
 
 

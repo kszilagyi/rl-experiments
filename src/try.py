@@ -18,7 +18,7 @@ def main():
                     'lr': 1e-1,
                     'gamma': 0.95,
                     'optimizer': 'sgd',
-                    'render_freq': 100}
+                    'model_save_freq': 100}
 
     run(hyperparams, [
                             # LiveGraphLogger('episode_num', 'episode_return'),
