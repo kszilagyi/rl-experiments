@@ -37,6 +37,10 @@ class Algo(ABC):
     def save_model(self, path: str):
         pass
 
+    @abstractmethod
+    def load_model(self, path: str):
+        pass
+
 
 class LoggerBackend(ABC):
     @abstractmethod
@@ -116,7 +120,6 @@ class Environment:
                 algo.start_episode()
                 episode_return = 0
                 save_model = (episode_num + 1) % self.model_save_freq == 0 or sample_cnt >= self.max_sample_cnt
-                frames = []
                 for t in range(self.episode_length):
                     action = algo.action(observation, t)
                     new_observation, reward, done, info = env.step(action)
@@ -165,4 +168,28 @@ class Environment:
             env.close()
             logger.close()
 
+    def render(self, seed):
+        algo = self.algo
+        env = self.env_creator()
+        algo.init_model(env.action_space.n)
+        algo.load_model('render/model/ckpt')
+        np.random.seed(seed)
+        random.seed(seed)
+        env.seed(seed)
+        env.action_space.seed(seed)
+        tf.random.set_seed(seed)
+        for i_episode in range(20):
+            observation = env.reset()
+            ret = 0
+            t = 0
+            while True:
+                env.render()
+                action = algo.action(observation, t)
+                observation, reward, done, info = env.step(action)
+                ret += reward
+                if done or t+1 >= self.episode_length:
+                    print(f'Episode finished after {t+1} timesteps, with return {ret}')
+                    break
+                t += 1
+        env.close()
 

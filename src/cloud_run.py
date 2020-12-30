@@ -1,8 +1,8 @@
 import importlib
 import json
 import os
+import time
 import traceback
-import random
 from typing import Dict, List
 
 import gym
@@ -16,7 +16,7 @@ from src.max_returns import max_possible_returns
 logger = logg(__name__)
 
 
-def run(params: Dict, extra_logging_backends: List[LoggerBackend]):
+def run(params: Dict, extra_logging_backends: List[LoggerBackend], render_only: bool):
     try:
         logger.error(f'Params: {params}')
         algo_creator = getattr(importlib.import_module(params['algo_path']), params['algo_name'])
@@ -28,8 +28,11 @@ def run(params: Dict, extra_logging_backends: List[LoggerBackend]):
                             hyperparams=params)
         env = Environment(max_sample_cnt=params['max_sample_cnt'], episode_length=episode_length,
                           env_creator=lambda: gym.make(env_name), algo=algo, model_save_freq=params['model_save_freq'])
-        env.train(params['seed'], Logger([FileLogger(list(params.keys()) + MANDATORY_COLUMNS + ['episode_return'])]
-                                         + extra_logging_backends, params))
+        if not render_only:
+            env.train(params['seed'], Logger([FileLogger(list(params.keys()) + MANDATORY_COLUMNS + ['episode_return'])]
+                                             + extra_logging_backends, params))
+        else:
+            env.render(int(time.time()))
     except BaseException as e:
         logger.error(traceback.format_exc())
         raise e
@@ -66,7 +69,6 @@ def main():
         with open(OUTPUT_DIR / 'result.json', 'w') as f:
             json.dump({'status': status}, f)
         upload_files(cloud_root, OUTPUT_DIR, None, bucket)
-
 
 
 if __name__ == '__main__':
