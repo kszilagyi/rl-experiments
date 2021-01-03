@@ -20,7 +20,7 @@ seeds = list(range(20))
 search = [
     {
         'grid': {
-            'max_sample_cnt': 1000*1000,
+            'max_sample_cnt': [1000*1000],
             'seed': list(range(10)),
             'environment': ['BipedalWalker-v3'],
             'episode_length': [1000],
@@ -29,7 +29,7 @@ search = [
     },
     {
         'grid': {
-            'max_sample_cnt': 1000*500,
+            'max_sample_cnt': [1000*500],
             'seed': seeds,
             'environment': ['CartPole-v1'],
             'episode_length': [200],
@@ -38,7 +38,7 @@ search = [
     },
     {
         'grid': {
-            'max_sample_cnt': 1000*500,
+            'max_sample_cnt': [1000*500],
             'seed': seeds,
             'environment': ['LunarLander-v2'],
             'episode_length': [1000],
@@ -47,7 +47,7 @@ search = [
     },
     {
         'grid': {
-            'max_sample_cnt': 1000*500,
+            'max_sample_cnt': [1000*500],
             'seed': seeds,
             'environment': ['Pendulum-v0'],
             'episode_length': [200],
