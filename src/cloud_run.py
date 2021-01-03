@@ -61,7 +61,7 @@ def main():
     params['job_id'] = job_id
     status = 'SUCCESS'
     try:
-        run(params, [])
+        run(params, [], render_only=False)
     except BaseException as e:
         status = 'FAILURE'
         raise e
