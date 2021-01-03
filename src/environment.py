@@ -30,7 +30,7 @@ class Algo(ABC):
         pass
 
     @abstractmethod
-    def init_model(self, inputs: int):
+    def init_model(self, env):
         pass
 
     @abstractmethod
@@ -100,12 +100,12 @@ class Environment:
     def train(self, seed: int, logger: Logger):
         algo = self.algo
         env = self.env_creator()
-        algo.init_model(env.action_space.n)
         np.random.seed(seed)
         random.seed(seed)
         env.seed(seed)
         env.action_space.seed(seed)
         tf.random.set_seed(seed)
+        algo.init_model(env)
         episode_returns = []
         sample_cnt = 0
         start_time = time.time()
@@ -171,7 +171,7 @@ class Environment:
     def render(self, seed):
         algo = self.algo
         env = self.env_creator()
-        algo.init_model(env.action_space.n)
+        algo.init_model(env)
         algo.load_model('render/model/ckpt')
         np.random.seed(seed)
         random.seed(seed)

@@ -16,7 +16,6 @@ static = {
 }
 
 seeds = list(range(50))
-
 search = [
     {
         'grid': {

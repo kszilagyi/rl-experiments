@@ -2,11 +2,36 @@ from typing import Dict
 
 import numpy as np
 import tensorflow as tf
+from gym.spaces import Box
 from tensorflow.python.ops.distributions.categorical import Categorical
+from tensorflow.python.ops.distributions.normal import Normal
 
 from src.environment import Algo
-from src.model import PolicyModel
+from src.model import CategoricalPolicyModel, GaussianPolicyModel
 
+
+class CategoricalPolicy:
+    def __init__(self, outputs):
+        self.model = CategoricalPolicyModel(outputs)
+
+    def action(self, well_formed_obs):
+        action_logits: tf.Tensor = self.model(well_formed_obs, training=True)
+        dist = Categorical(logits=action_logits)
+        sampled_action = dist.sample()
+        sampled_prob = dist.log_prob(sampled_action)
+        return sampled_action, sampled_prob
+
+
+class GaussianPolicy:
+    def __init__(self, outputs, scale):
+        self.model = GaussianPolicyModel(outputs, scale)
+
+    def action(self, well_formed_obs):
+        mu: tf.Tensor = self.model(well_formed_obs, training=True)
+        dist = Normal(loc=mu, scale=0.5)
+        sampled_action = dist.sample()
+        sampled_prob = dist.log_prob(tf.stop_gradient(sampled_action))
+        return sampled_action, tf.reduce_mean(sampled_prob) # reduce mean?
 
 
 class PolicyGradient(Algo):
@@ -27,24 +52,35 @@ class PolicyGradient(Algo):
             assert(False)
         self.optimizer = optimizer(learning_rate=hyperparams['lr'])
 
-    def init_model(self, inputs: int):
-        self.policy_model = PolicyModel(inputs)
+    def init_model(self, env):
+        action_space = env.action_space
+        if not isinstance(action_space, Box):
+            self.policy = CategoricalPolicy(action_space.n)
+        else:
+            low = action_space.low
+            high = action_space.high
+            assert np.isscalar(low) or (low[0] == low).all()
+            assert np.isscalar(high) or (high[0] == high).all()
+            if not np.isscalar(low):
+                low = low[0]
+            if not np.isscalar(high):
+                high = high[0]
+            assert abs(low) == high
+            self.policy = GaussianPolicy(action_space.shape[0], scale=(high - low)/2)
+
 
     def save_model(self, path: str):
-        self.policy_model.save_weights(path)
+        self.policy.model.save_weights(path)
 
     def load_model(self, path: str):
-        self.policy_model.load_weights(path)
+        self.policy.model.load_weights(path)
 
     @tf.function
     def _action(self, well_formed_obs, t):
         with tf.GradientTape() as tape:
-            action_logits: tf.Tensor = self.policy_model(well_formed_obs, training=True)
-            dist = Categorical(logits=action_logits)
-            sampled_action = dist.sample()
-            higher_prob = dist.log_prob(sampled_action)
+            sampled_action, sampled_prob = self.policy.action(well_formed_obs)
 
-        grads = tape.gradient(higher_prob, self.policy_model.trainable_variables)
+        grads = tape.gradient(sampled_prob, self.policy.model.trainable_variables)
         return sampled_action, grads
 
     def action(self, observation, t):
@@ -95,5 +131,5 @@ class PolicyGradient(Algo):
                 grad_acc = [g + acc for g, acc in zip(adjusted_grads, grad_acc)]
             grads_for_debug.append(np.concatenate([a.numpy().flatten() for a in adjusted_grads]))
 
-        self.optimizer.apply_gradients(zip(grad_acc, self.policy_model.trainable_variables))
-        return t + 1, grads_for_debug, self.policy_model.get_weights()
+        self.optimizer.apply_gradients(zip(grad_acc, self.policy.model.trainable_variables))
+        return t + 1, grads_for_debug, self.policy.model.get_weights()

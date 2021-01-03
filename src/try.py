@@ -8,20 +8,21 @@ def main():
     hyperparams = { 'algo_path': 'src.policy_gradient',
                     'algo_name': 'PolicyGradient',
                     'episode_length': 200,
-                    'environment': 'LunarLander-v2',
-                    'max_sample_cnt': 200,
+                    # 'environment': 'LunarLander-v2',
+                    'environment': 'Pendulum-v0',
+                    'max_sample_cnt': 1000*1000,
                     'normalise_returns_with_episode_length': True,
-                    'seed': 2,
+                    'seed': 4,
                     'normalise_with_max_returns': False,
-                    'normalise_returns': False,
+                    'normalise_returns': True,
                     'center_returns': True,
-                    'lr': 1e-1,
+                    'lr': 0.0025,
                     'gamma': 0.95,
-                    'optimizer': 'sgd',
+                    'optimizer': 'adam',
                     'model_save_freq': 100}
 
     run(hyperparams, [
-                            # LiveGraphLogger('episode_num', 'episode_return'),
+                            LiveGraphLogger('episode_num', 'episode_return'),
                             # LiveGraphLogger('sample_cnt', 'episode_return'),
                             # LiveGraphLogger('episode_num', 'abs_max_gradient'),
                             # LiveGraphLogger('episode_num', 'abs_min_gradient'),
@@ -30,7 +31,7 @@ def main():
                             # LiveGraphLogger('episode_num', 'abs_mean_weight'),
                             # LiveGraphLogger('episode_num', 'abs_mean_gradient'),
 
-                          ])
+                          ], render_only=False)
 
 
 if __name__ == '__main__':

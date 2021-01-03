@@ -4,13 +4,12 @@ from tensorflow.python.keras.models import Model
 import tensorflow as tf
 
 
-class PolicyModel(Model):
+class CategoricalPolicyModel(Model):
     def __init__(self, outputs):
-        super(PolicyModel, self).__init__()
-        self.d1 = Dense(10, activation='relu', name='128-layer')
+        super(CategoricalPolicyModel, self).__init__()
+        self.d1 = Dense(10, activation='relu')
         self.d2 = Dense(10, activation='relu')
         self.d3 = Dense(outputs)
-        print(len(self.d1.trainable_variables))
 
     def call(self, x) -> tf.Tensor:
         x = self.d1(x)
@@ -18,6 +17,22 @@ class PolicyModel(Model):
         x = self.d3(x)
 
         return x
+
+
+class GaussianPolicyModel(Model):
+    def __init__(self, outputs, scale):
+        super(GaussianPolicyModel, self).__init__()
+        self.d1 = Dense(10, activation='relu')
+        self.d2 = Dense(10, activation='relu')
+        self.d3 = Dense(outputs, activation='tanh')
+        self.scale = scale
+
+    def call(self, x) -> tf.Tensor:
+        x = self.d1(x)
+        x = self.d2(x)
+        x = self.d3(x)
+
+        return x * self.scale
 
 
 class ValueModel(Model):
